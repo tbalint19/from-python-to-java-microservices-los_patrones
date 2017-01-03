@@ -1,3 +1,8 @@
+import Controller.CostCalculatorController;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
 import static spark.Spark.*;
 
 /**
@@ -11,7 +16,14 @@ public class Main {
         staticFiles.location("/public");
         port(9999);
 
-        get("/", (req, res) -> (req));
+        get("/api", new Route(){
+            @Override
+            public String handle(Request request, Response response) throws Exception {
+                CostCalculatorController controller = new CostCalculatorController();
+                String responseJSON = controller.calculatePostalCost(request);
+                return responseJSON;
+            }
+        });
 
     }
 }
