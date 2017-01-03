@@ -39,6 +39,19 @@ public class GoogleApiController extends JsonTransformer{
         return distance;
     }
 
+    public boolean countryCheck(String webshop, String target) {
+        String params = "?origins=" + webshop + "&destinations=" + target + "&key=" + API_KEY;
+        String responseJSON = execute(params);
+        String destination = (String) (Arrays.asList((List)parse(responseJSON).get("destination_addresses")).get(0)).get(0);
+        String origin = (String) (Arrays.asList((List)parse(responseJSON).get("origin_addresses")).get(0)).get(0);
+        String[] destinationArray = destination.split(" ");
+        String[] originArray = origin.split(" ");
+        String destinationCountry = destinationArray[destinationArray.length - 1];
+        String originCountry = originArray[originArray.length - 1];
+        boolean is_same = destinationCountry.equals(originCountry);
+        return is_same;
+    }
+
     private String execute(String url) {
         try {
             URI uri = new URIBuilder(SERVICE_URL + url).build();
