@@ -17,15 +17,24 @@ public class GoogleApiController extends JsonTransformer{
 
     private final String API_KEY;
     private final String SERVICE_URL;
+    private String webshop;
+    private String target;
+    private String responseJSON;
 
-    public GoogleApiController() {
-        this.API_KEY = "AIzaSyBHcG9di92OUUpCrzLXgq4Er4AlOo1cFV4";
+    public GoogleApiController(String webshop, String target) {
         this.SERVICE_URL = "https://maps.googleapis.com/maps/api/distancematrix/json";
+        this.API_KEY = "AIzaSyBHcG9di92OUUpCrzLXgq4Er4AlOo1cFV4";
+        this.webshop = webshop;
+        this.target = target;
+        connect();
     }
 
-    public double getDistance(String webshop, String target) {
-        String params = "?origins=" + webshop + "&destinations=" + target + "&key=" + API_KEY;
-        String responseJSON = execute(params);
+    private void connect() {
+        String params = "?origins=" + this.webshop + "&destinations=" + this.target + "&key=" + API_KEY;
+        this.responseJSON = execute(params);
+    }
+
+    public double getDistance() {
         double distance = (double)((LinkedTreeMap)((LinkedTreeMap)((ArrayList)((LinkedTreeMap)
                 Arrays.asList(((List)parse(responseJSON)
                 .get("rows")))
@@ -39,9 +48,20 @@ public class GoogleApiController extends JsonTransformer{
         return distance;
     }
 
-    public boolean countryCheck(String webshop, String target) {
-        String params = "?origins=" + webshop + "&destinations=" + target + "&key=" + API_KEY;
-        String responseJSON = execute(params);
+    public String getStatus() {
+        String status = ((LinkedTreeMap)((ArrayList)((LinkedTreeMap)
+                Arrays.asList(
+                (List)parse(responseJSON).get("rows"))
+                .get(0)
+                .get(0))
+                .get("elements"))
+                .get(0))
+                .get("status")
+                .toString();
+        return status;
+    }
+
+    public boolean countryCheck() {
         String destination = (String) (Arrays.asList((List)parse(responseJSON).get("destination_addresses")).get(0)).get(0);
         String origin = (String) (Arrays.asList((List)parse(responseJSON).get("origin_addresses")).get(0)).get(0);
         String[] destinationArray = destination.split(" ");
@@ -50,6 +70,18 @@ public class GoogleApiController extends JsonTransformer{
         String originCountry = originArray[originArray.length - 1];
         boolean is_same = destinationCountry.equals(originCountry);
         return is_same;
+    }
+
+    public boolean continentCheck() {
+        String status = getStatus();
+        boolean is_same = !status.equals("ZERO_RESULTS");
+        return is_same;
+    }
+
+    public boolean validCheck() {
+        String status = getStatus();
+        boolean is_valid = !status.equals("NOT_FOUND");
+        return  is_valid;
     }
 
     private String execute(String url) {

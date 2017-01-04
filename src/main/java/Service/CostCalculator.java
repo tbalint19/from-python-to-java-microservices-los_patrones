@@ -12,41 +12,61 @@ public class CostCalculator {
     private double baseFee;
     private double distanceMultiplier;
     private double foreignMultiplier;
+    private double differentContinentFee;
+    private GoogleApiController googleApiController;
 
     public CostCalculator (String target, String webshop) {
         this.target = target;
         this.webshop = webshop;
         this.baseFee = 3;
-        this.distanceMultiplier = 1;
+        this.distanceMultiplier = 0.0000035;
         this.foreignMultiplier = 1.5;
+        this.differentContinentFee = 30;
+        this.googleApiController = new GoogleApiController(this.target, this.webshop);
     }
 
     public double getFeeFromDistance() {
-        GoogleApiController helper = new GoogleApiController();
-
-        double distance = helper.getDistance(target, webshop);
+        double distance = googleApiController.getDistance();
         double distanceFee = distance * distanceMultiplier;
 
         return distanceFee;
     }
 
     public double getFeeForForeignTransfer() {
-        GoogleApiController helper = new GoogleApiController();
-
-        boolean is_same = helper.countryCheck(target, webshop);
+        boolean is_same = googleApiController.countryCheck();
         if (is_same) {
             return 1;
         }
         return foreignMultiplier;
     }
 
-    public double getFee() {
+    public boolean isValid() {
+        boolean isValid = googleApiController.validCheck();
+
+        return isValid;
+    }
+
+    public boolean isSameContinent() {
+        boolean isValid = googleApiController.continentCheck();
+
+        return isValid;
+    }
+
+    public String getFee() {
+        if (!isValid()) {
+            return "Could not calculate";
+        }
+
+        if (!isSameContinent()) {
+            return Double.toString(differentContinentFee) + " $";
+        }
+
         double additionalFee = 0;
 
         additionalFee += getFeeFromDistance();
         additionalFee *= getFeeForForeignTransfer();
 
-        double fee = baseFee + additionalFee;
+        String fee = Double.toString(baseFee + additionalFee) + " $";
         return fee;
     }
 }

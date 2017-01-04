@@ -10,15 +10,30 @@ import java.util.HashMap;
  */
 public class CostCalculatorController extends JsonTransformer {
 
-    public String calculatePostalCost (Request request) {
+    private Request request;
+
+    public CostCalculatorController(Request request) {
+        this.request = request;
+    }
+
+    public String calculatePostalCost () {
         String target = request.queryParams("target");
         String webshop = request.queryParams("webshop");
-
-        CostCalculator service = new CostCalculator(target, webshop);
-        double fee = service.getFee();
-
         HashMap responseData = new HashMap();
-        responseData.put("cost", fee);
+
+        if (target == null || webshop == null) {
+            responseData.put("cost", "Could not calculate");
+            responseData.put("status", "Missing parameters");
+        } else {
+            CostCalculator service = new CostCalculator(target, webshop);
+            String fee = service.getFee();
+            responseData.put("cost", fee);
+            if (responseData.get("cost").equals("Could not calculate")) {
+                responseData.put("status", "Invalid parameters");
+            } else {
+                responseData.put("status", "Completed");
+            }
+        }
 
         String responseJson = stringify(responseData);
         return responseJson;

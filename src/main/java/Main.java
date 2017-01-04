@@ -19,8 +19,8 @@ public class Main {
         get("/api", new Route(){
             @Override
             public String handle(Request request, Response response) throws Exception {
-                CostCalculatorController controller = new CostCalculatorController();
-                String responseJSON = controller.calculatePostalCost(request);
+                CostCalculatorController controller = new CostCalculatorController(request);
+                String responseJSON = controller.calculatePostalCost();
                 return responseJSON;
             }
         });
