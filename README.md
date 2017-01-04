@@ -43,4 +43,4 @@ API will send you a pretty straightforward answer:
 
     {"cost": "Could not calculate", "status": "Invalid parameters"}
 
-In any case ther response will only contain strings.
+In any case the response will only contain strings.
