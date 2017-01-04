@@ -8,6 +8,7 @@
 
  - **EASY TO USE**
 
+--------------------------------------------------------
 >_**Overview**_
 
 Easy to use postal free calculator for webshops.
@@ -15,6 +16,7 @@ Based on the addresses, this microservice calculates
 the expected postal fee, so that you can inform your
 customers.
 
+--------------------------------------------------------
 >_**Example**_
 
 Create a URL:
