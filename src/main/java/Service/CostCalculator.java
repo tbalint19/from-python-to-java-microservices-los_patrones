@@ -25,14 +25,14 @@ public class CostCalculator {
         this.googleApiController = new GoogleApiController(this.target, this.webshop);
     }
 
-    public double getFeeFromDistance() {
+    private double getFeeFromDistance() {
         double distance = googleApiController.getDistance();
         double distanceFee = distance * distanceMultiplier;
 
         return distanceFee;
     }
 
-    public double getFeeForForeignTransfer() {
+    private double getFeeForForeignTransfer() {
         boolean is_same = googleApiController.countryCheck();
         if (is_same) {
             return 1;
@@ -40,13 +40,13 @@ public class CostCalculator {
         return foreignMultiplier;
     }
 
-    public boolean isValid() {
+    private boolean isValid() {
         boolean isValid = googleApiController.validCheck();
 
         return isValid;
     }
 
-    public boolean isSameContinent() {
+    private boolean isSameContinent() {
         boolean isValid = googleApiController.continentCheck();
 
         return isValid;
